@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
-import Container from './App.styled';
 import Controls from 'components/Controls/Controls';
+import Notification from 'components/Notification/Notification';
+import Section from 'components/Section/Section';
+import Statistics from 'components/Statistics/Statistics';
+import Container from './App.styled';
+
+const options = ['good', 'bad', 'neutral'];
 
 export class App extends Component {
   state = {
@@ -9,49 +14,51 @@ export class App extends Component {
     bad: 0
   };
 
-  hendelIncrementGood = () => {
-    this.setState(prevState => {
-      return {
-        good: prevState.good + 1,
-      };
-    });
-  };
-  
-  hendelIncrementNeutral = () => {
-    this.setState(prevState => {
-      return {
-        neutral: prevState.neutral + 1,
-      };
-    });
+  countTotalFeedback = () => {
+    const { good, neutral, bad } = this.state;
+    return good + bad + neutral;
   };
 
-  hendelIncrementBad = () => {
-    this.setState(prevState => {
-      return {
-        bad: prevState.bad + 1,
-      };
-    });
+  countPositiveFeedbackPercentage = () => {
+    const { good, neutral, bad } = this.state;
+    return Math.floor((100 / (good + neutral + bad)) * good) || 0;
   };
 
+  onClickButton = e => {
+    const element = e.currentTarget.dataset.type;
+    this.setState(prevState => ({
+      [element]: prevState[element] + 1,
+    }));
+  };
 
   render() {
+  
+    const total = this.countTotalFeedback();
+    const positivePercentage = this.countPositiveFeedbackPercentage();
+
+    const { good, neutral, bad } = this.state;
     return (
       <Container>
-        <h2>Please leave feedback</h2>
-        
-        <Controls onIncrementGood={this.hendelIncrementGood} onIncrementNeutral={this.hendelIncrementNeutral} onIncrementBad={this.hendelIncrementBad}
-        />
-              
-        <h3>Statistics</h3>
-
-        <ul>
-          <li>Good: {this.state.good}</li>
-          <li>Neutral: {this.state.neutral}</li>
-          <li>Bad: {this.state.bad}</li>
-        </ul>
-          
-      </Container >
+        <Section title="Please Leave feedback">
+          <Controls
+            options={options}
+            onLeaveFeedback={this.onClickButton}
+          />
+        </Section>
+        <Section title="Statistics">
+          {this.countTotalFeedback() === 0 ? (
+            <Notification massege="There is no feedback" />
+          ) : (
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={total}
+              positivePercentage={positivePercentage}
+            />
+          )}
+        </Section>
+      </Container>
     );
-  };
-};
-  
+  }
+}

@@ -1,14 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import Button from './Controls.styled';
 
-const Controls = ({ onIncrementGood, onIncrementNeutral, onIncrementBad }) => {
-    return (
-        <ul>
-            <li><button type='button' onClick={onIncrementGood}>Good</button></li>
-            <li><button type='button' onClick={onIncrementNeutral}>Neutral</button></li>
-            <li><button type='button' onClick={onIncrementBad}>Bad</button></li>
-        </ul>
-    );
-    
+const Controls = ({ onLeaveFeedback, options }) => {
+  return (
+    <div>
+      {options.map(option => (
+        <Button
+          type="button"
+          key={option}
+          onClick={onLeaveFeedback}
+          data-type={option}
+        >
+          {option}
+        </Button>
+      ))}
+    </div>
+  );
+};
+
+Controls.propTypes = {
+  options: PropTypes.array,
+  onLeaveFeedback: PropTypes.func.isRequired,
 };
 
 export default Controls;
